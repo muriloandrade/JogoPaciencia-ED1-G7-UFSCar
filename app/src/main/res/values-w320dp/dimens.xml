@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="largura_carta">38dp</dimen>
+    <dimen name="altura_carta">51dp</dimen>
+
+    <dimen name="margem_layouts">3dp</dimen>
+
+    <dimen name="distancia_cartas">20dp</dimen>
+</resources>
