@@ -6,7 +6,8 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /**
- * Created by Murilo on 04/04/2015.
+ * Classe Carta
+ *
  */
 public class Carta extends ImageView
 {
@@ -110,7 +111,6 @@ public class Carta extends ImageView
     public void selecionar(boolean selecionar)
     {
         selecionada = selecionar;
-//        setBackgroundColor(Color.parseColor("#ffff0000"));
         setImagem(null);
     }
 
