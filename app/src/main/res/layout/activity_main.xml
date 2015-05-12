@@ -18,6 +18,7 @@
 
         <com.example.murilo.jogopaciencia.Pilhas.Deck
             android:id="@+id/deck"
+            android:background="@drawable/deck"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="@dimen/altura_carta"
             android:layout_margin="2dp"
