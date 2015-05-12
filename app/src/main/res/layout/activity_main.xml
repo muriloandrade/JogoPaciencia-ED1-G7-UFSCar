@@ -1,77 +1,77 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:padding="8dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#006600"
     android:orientation="vertical"
-    tools:context=".MainActivity"
-    android:background="#006600">
+    android:padding="8dp"
+    tools:context=".MainActivity">
 
     <LinearLayout
         android:id="@+id/headerLayout"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/altura_carta"
-        android:orientation="horizontal"
-        android:layout_gravity="center_horizontal">
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal">
 
 
-        <com.example.murilo.jogopaciencia.Deck
+        <com.example.murilo.jogopaciencia.Pilhas.Deck
             android:id="@+id/deck"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="@dimen/altura_carta"
-            android:padding="1dp"
-            android:layout_margin="2dp"/>
+            android:layout_margin="2dp"
+            android:padding="1dp"/>
 
-        <com.example.murilo.jogopaciencia.PilhaAberta
+        <com.example.murilo.jogopaciencia.Pilhas.PilhaAberta
             android:id="@+id/open"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="@dimen/altura_carta"
-            android:padding="1dp"
-            android:layout_margin="2dp" />
+            android:layout_margin="2dp"
+            android:padding="1dp"/>
 
         <ImageView
             android:id="@+id/null_img"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="@dimen/altura_carta"
-            android:padding="1dp"
             android:layout_margin="2dp"
+            android:padding="1dp"
             android:src="@null"/>
 
         <LinearLayout
-            android:id="@+id/montesLayout"
+            android:id="@+id/pilhasDefinitivasLayout"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/altura_carta"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal">
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
 
-            <com.example.murilo.jogopaciencia.Monte
+            <com.example.murilo.jogopaciencia.Pilhas.PilhaDefinitiva
                 android:id="@+id/sol1"
                 android:layout_width="@dimen/largura_carta"
                 android:layout_height="match_parent"
-                android:padding="1dp"
-                android:layout_margin="2dp"/>
+                android:layout_margin="2dp"
+                android:padding="1dp"/>
 
-            <com.example.murilo.jogopaciencia.Monte
+            <com.example.murilo.jogopaciencia.Pilhas.PilhaDefinitiva
                 android:id="@+id/sol2"
                 android:layout_width="@dimen/largura_carta"
                 android:layout_height="match_parent"
-                android:padding="1dp"
-                android:layout_margin="2dp"/>
+                android:layout_margin="2dp"
+                android:padding="1dp"/>
 
-            <com.example.murilo.jogopaciencia.Monte
+            <com.example.murilo.jogopaciencia.Pilhas.PilhaDefinitiva
                 android:id="@+id/sol3"
                 android:layout_width="@dimen/largura_carta"
                 android:layout_height="match_parent"
-                android:padding="1dp"
-                android:layout_margin="2dp"/>
+                android:layout_margin="2dp"
+                android:padding="1dp"/>
 
-            <com.example.murilo.jogopaciencia.Monte
+            <com.example.murilo.jogopaciencia.Pilhas.PilhaDefinitiva
                 android:id="@+id/sol4"
                 android:layout_width="@dimen/largura_carta"
                 android:layout_height="match_parent"
-                android:padding="1dp"
-                android:layout_margin="2dp"/>
+                android:layout_margin="2dp"
+                android:padding="1dp"/>
 
         </LinearLayout>
 
@@ -81,53 +81,53 @@
         android:id="@+id/mainLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/margem_layouts"
-        android:layout_gravity="center_horizontal">
+        android:orientation="horizontal">
 
-        <com.example.murilo.jogopaciencia.Coluna
+        <com.example.murilo.jogopaciencia.Pilhas.PilhaIntermediaria
             android:id="@+id/col1"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="match_parent"
             android:layout_margin="2dp"
             android:gravity="center_horizontal" />
 
-        <com.example.murilo.jogopaciencia.Coluna
+        <com.example.murilo.jogopaciencia.Pilhas.PilhaIntermediaria
             android:id="@+id/col2"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="match_parent"
             android:layout_margin="2dp"
             android:gravity="center_horizontal" />
 
-        <com.example.murilo.jogopaciencia.Coluna
+        <com.example.murilo.jogopaciencia.Pilhas.PilhaIntermediaria
             android:id="@+id/col3"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="match_parent"
             android:layout_margin="2dp"
             android:gravity="center_horizontal" />
 
-        <com.example.murilo.jogopaciencia.Coluna
+        <com.example.murilo.jogopaciencia.Pilhas.PilhaIntermediaria
             android:id="@+id/col4"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="match_parent"
             android:layout_margin="2dp"
             android:gravity="center_horizontal" />
 
-        <com.example.murilo.jogopaciencia.Coluna
+        <com.example.murilo.jogopaciencia.Pilhas.PilhaIntermediaria
             android:id="@+id/col5"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="match_parent"
             android:layout_margin="2dp"
             android:gravity="center_horizontal" />
 
-        <com.example.murilo.jogopaciencia.Coluna
+        <com.example.murilo.jogopaciencia.Pilhas.PilhaIntermediaria
             android:id="@+id/col6"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="match_parent"
             android:layout_margin="2dp"
             android:gravity="center_horizontal" />
 
-        <com.example.murilo.jogopaciencia.Coluna
+        <com.example.murilo.jogopaciencia.Pilhas.PilhaIntermediaria
             android:id="@+id/col7"
             android:layout_width="@dimen/largura_carta"
             android:layout_height="match_parent"
@@ -144,22 +144,22 @@
             android:id="@+id/bt_novoJogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Novo Jogo"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:text="Novo Jogo"/>
 
         <TextView
             android:id="@+id/tx_venceu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/bt_novoJogo"
+            android:gravity="center_horizontal"
             android:paddingBottom="18dp"
             android:text="PARABÉNS VOCÊ VENCEU !!"
-            android:textStyle="bold"
             android:textColor="#ffffff"
-            android:visibility="gone"
-            android:gravity="center_horizontal"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 
