@@ -6,13 +6,11 @@ import android.util.AttributeSet;
 import android.widget.ImageView;
 
 /**
- * Classe Carta
+ * Classe Carta (de baralho)
  *
  */
 public class Carta extends ImageView
 {
-    public static int WIDTH  = 1000;
-
     public static char COPAS  = 'c';
     public static char OURO   = 'o';
     public static char PAUS   = 'p';
@@ -29,6 +27,7 @@ public class Carta extends ImageView
     private boolean mostrandoFrente;
     private boolean selecionada;
 
+    // Construtores
     public Carta(Context context)
     {
         super(context);
@@ -48,35 +47,18 @@ public class Carta extends ImageView
     {
         super(context, attrs, defStyleAttr);
     }
+    // Fim construtores
 
+
+    // Getters e Setters
     public int getCor()
     {
         return cor;
     }
 
-    public void setImagem(Drawable drawable)
+    public void setCor(int cor)
     {
-        if (drawable == null)
-        {
-            StringBuilder imgUri = new StringBuilder();
-
-            imgUri.append("drawable/");
-            imgUri.append(naipe);
-            imgUri.append(numero);
-            if (selecionada) imgUri.append("s");
-
-            int imageResource = getResources().getIdentifier(imgUri.toString(), null, context.getPackageName());
-
-            setImageDrawable(context.getResources().getDrawable(imageResource));
-
-            mostrandoFrente = true;
-        }
-        else
-        {
-            setImageDrawable(drawable);
-
-            mostrandoFrente = false;
-        }
+        this.cor = cor;
     }
 
     public int getNumero()
@@ -100,27 +82,62 @@ public class Carta extends ImageView
 
         if (naipe == PAUS || naipe == ESPADA)
         {
-            cor = PRETO;
+            setCor(PRETO);
         }
         else
         {
-            cor = VERMELHO;
+            setCor(VERMELHO);
         }
     }
 
-    public void selecionar(boolean selecionar)
+    public boolean getSelecionada()
     {
-        selecionada = selecionar;
+        return selecionada;
+    }
+
+    public void setSelecionada(boolean selecionar)
+    {
+        this.selecionada = selecionar;
         setImagem(null);
     }
 
-    public boolean estaMostrandoFrente()
+    public void setImagem(Drawable drawable)
+    {
+        // se nenhuma imagem especial for passada, por padrao, exibe-se a frente desta carta
+        if (drawable == null)
+        {
+            StringBuilder imgUri = new StringBuilder();
+
+            imgUri.append("drawable/");
+            imgUri.append(naipe);
+            imgUri.append(numero);
+            if (selecionada)
+            {
+                imgUri.append("s");
+            }
+
+            int imageResource = getResources().getIdentifier(imgUri.toString(), null, context.getPackageName());
+
+            setImageDrawable(context.getResources().getDrawable(imageResource));
+
+            setMostrandoFrente(true);
+        }
+        else
+        {
+            setImageDrawable(drawable);
+            setMostrandoFrente(false);
+        }
+    }
+
+    public boolean getMostrandoFrente()
     {
         return mostrandoFrente;
     }
 
-    public boolean estaSelecionada()
+    public void setMostrandoFrente(boolean mostrandoFrente)
     {
-        return selecionada;
+        this.mostrandoFrente = mostrandoFrente;
     }
+
+    // Fim getters e setters
 }

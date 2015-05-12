@@ -8,7 +8,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.example.murilo.jogopaciencia.Pilhas.Coluna;
+import com.example.murilo.jogopaciencia.Pilhas.Deck;
+import com.example.murilo.jogopaciencia.Pilhas.Monte;
+import com.example.murilo.jogopaciencia.Pilhas.NodeCarta;
+import com.example.murilo.jogopaciencia.Pilhas.PilhaAberta;
+import com.example.murilo.jogopaciencia.Pilhas.TAD_PilhaCartas;
 
 
 public class MesaDoJogo extends ActionBarActivity
@@ -17,115 +22,192 @@ public class MesaDoJogo extends ActionBarActivity
     private static final int NUM_COLUNAS = 7;
     private static final int NUM_MONTES  = 4;
 
-    public static ArrayList<Carta> cartasSelecionadas = new ArrayList<>(13);
-    public static Coluna           ult_coluna         = null;
+    public static TAD_PilhaCartas cartasSelecionadas;
+    public static Coluna ult_coluna = null;
     private static PilhaAberta pilhaAberta;
     private static Monte[]  montes  = new Monte[NUM_MONTES];
     private static Coluna[] colunas = new Coluna[NUM_COLUNAS];
-    private static PilhaBase    origem;
-    private        Deck         deck;
-    private        LinearLayout montesLayout;
-    private        LinearLayout mainLayout;
-    private        Button       bt_novoJogo;
-    private static TextView     tx_venceu;
-
+    private static TAD_PilhaCartas origem;
+    private static TextView        tx_venceu;
     private static boolean venceu = false;
+    private Deck         deck;
+    private LinearLayout montesLayout;
+    private LinearLayout mainLayout;
+    private Button       bt_novoJogo;
 
+    /**
+     * Metodo para des-selecionar as cartas e esvaziar a pilha de cartas selecionadas
+     */
+    private static void limpaSelecionadas()
+    {
+        while (!cartasSelecionadas.vazia())
+        {
+            cartasSelecionadas.getUltimoElemento().getCarta().setSelecionada(false);
+            cartasSelecionadas.desempilha();
+        }
+    }
+
+    // Metodos para criar e organizar um novo jogo
+
+    /**
+     * Metodo para adicionar a(s) carta(s) selecionada(s) a uma pilha destino
+     *
+     * @param origem:  pilha que esta enviando a(s) carta(s)
+     * @param destino: pilha que esta recebendo a(s) carta(s)
+     */
+    private static void adicionarSelecionadasApilha(TAD_PilhaCartas origem, TAD_PilhaCartas destino)
+    {
+        do
+        {
+            cartasSelecionadas.getUltimoElemento().getCarta().setSelecionada(false);
+            origem.desempilha();
+            origem.removeView(cartasSelecionadas.getUltimoElemento().getCarta());
+            destino.empilha(cartasSelecionadas.getUltimoElemento().getCarta());
+            cartasSelecionadas.desempilha();
+        }
+        while (!cartasSelecionadas.vazia());
+    }
+
+    /**
+     * Metodo para gerenciar os cliques nas colunas
+     *
+     * @param destino: coluna que vai receber a(s) carta(s)
+     * @param carta:   carta em que houve o clique
+     */
     public static void cartaClicadaColuna(Coluna destino, Carta carta)
     {
-        if (cartasSelecionadas.size() == 0)
+        // se nao houver carta(s) ja selecionada(s), entao a(s) cartas(s) esta(o) sendo selecionada(s) e nao mudara(o) de coluna
+        if (cartasSelecionadas.getTamanho() == 0)
         {
             origem = destino;
         }
 
+        // se o clique foi numa coluna vazia, pode ser colocado apenas uma sequencia de cartas iniciada por um Rei
         if (carta == null)
         {
-            if (cartasSelecionadas.size() > 0 && cartasSelecionadas.get(0).getNumero() == 13)
+            if (cartasSelecionadas.getTamanho() > 0 && cartasSelecionadas.getUltimoElemento().getCarta().getNumero() == 13)
             {
                 adicionarSelecionadasApilha(origem, destino);
             }
             limpaSelecionadas();
         }
-        else if (cartasSelecionadas.size() == 1 && carta == cartasSelecionadas.get(0))
+
+        // se tem apenas uma carta selecionada e ela foi clicada novamente, entao desfaz a selecao
+        else if (cartasSelecionadas.getTamanho() == 1 && carta == cartasSelecionadas.getUltimoElemento().getCarta())
         {
             limpaSelecionadas();
         }
-        else if (!carta.estaMostrandoFrente() && carta == destino.getCartaTopo())
+
+        // se a carta clicada estiver de costas e for a ultima da coluna, entao ela sera virada
+        else if (!carta.getMostrandoFrente() && carta == destino.getUltimoElemento().getCarta())
         {
             carta.setImagem(null);
             limpaSelecionadas();
         }
+
         else
         {
-            if (ult_coluna != destino && cartasSelecionadas.size() > 0)
+            // tentativa para encaixar a(s) carta(s) selecionada(s) na coluna destino
+            if (ult_coluna != destino && cartasSelecionadas.getTamanho() > 0)
             {
-
-                if (carta == destino.getCartaTopo() && cartasSelecionadas.get(0).getCor() != carta.getCor() && cartasSelecionadas.get(0).getNumero() == carta.getNumero() - 1)
+                // regra: a primeira carta da sequencia tem que ser de cor diferente e um numero abaixo da carta clicada
+                if (carta == destino.getUltimoElemento().getCarta() && cartasSelecionadas.getUltimoElemento().getCarta().getCor() != carta.getCor() && cartasSelecionadas.getUltimoElemento().getCarta().getNumero() == carta.getNumero() - 1)
                 {
                     adicionarSelecionadasApilha(origem, destino);
                 }
                 limpaSelecionadas();
             }
+
+            // seleciona a(s) carta(s) abaixo da carta clicada, se estiver(em) mostrando a frente
             else
             {
-
                 limpaSelecionadas();
 
-                boolean achou = false;
+                NodeCarta auxNode = destino.getUltimoElemento();
+                Carta cartaAtual;
 
-                for (int i = 0; i < destino.getCartas().size(); i++)
+                for (int i = 0; i < destino.getTamanho(); i++)
                 {
-                    if (carta == destino.getCartas().get(i))
+                    if (auxNode != null)
                     {
-                        achou = true;
-                    }
+                        cartaAtual = auxNode.getCarta();
 
-                    if (achou && destino.getCartas().get(i).estaMostrandoFrente())
-                    {
-                        cartasSelecionadas.add(destino.getCartas().get(i));
-                        cartasSelecionadas.get(cartasSelecionadas.size() - 1).selecionar(true);
+                        if (cartaAtual.getMostrandoFrente())
+                        {
+                            cartaAtual.setSelecionada(true);
+                            cartasSelecionadas.empilha(cartaAtual);
+                            if (cartaAtual == carta)
+                            {
+                                break;
+                            }
+                        }
+                        auxNode = auxNode.getNext();
                     }
                 }
             }
 
+            // atualiza a coluna atual como a ultima coluna em que houve atividade
             ult_coluna = destino;
         }
     }
 
+    /**
+     * Metodo para gerenciar os cliques na pilha aberta (ao lado do deck)
+     *
+     * @param carta: carta em que houve o clique
+     */
     public static void cartaClicadaPilhaAberta(Carta carta)
     {
+        // informa que a ultima atividade nao tera sido em coluna, pois esta sendo na pilha aberta
         ult_coluna = null;
 
-        if (carta.estaSelecionada())
+        // a carta foi clicada novamente, entao desfaz a selecao
+        if (carta.getSelecionada())
         {
             limpaSelecionadas();
         }
+
+        // seleciona a carta clicada
         else
         {
             limpaSelecionadas();
             origem = pilhaAberta;
-            carta.selecionar(true);
-            cartasSelecionadas.add(carta);
+            carta.setSelecionada(true);
+            cartasSelecionadas.empilha(carta);
         }
     }
 
+    // Fim metodos para criar e organizar um novo jogo
+
+    /**
+     * Metodo para gerenciar os cliques nas cartas dos montes definitivos
+     *
+     * @param carta: carta em que houve o clique
+     */
     public static void cartaClicadaMonte(Carta carta)
     {
+        // informa que a ultima atividade nao tera sido em coluna, pois esta sendo em um monte definitivo
         ult_coluna = null;
 
-        if (carta.estaSelecionada())
+        // a carta foi clicada novamente, entao desfaz a selecao
+        if (carta.getSelecionada())
         {
             limpaSelecionadas();
         }
-        else if (cartasSelecionadas.size() == 1)
+
+        // se houver apenas uma carta selecionada, tenta encaixa-la no monte definitivo
+        else if (cartasSelecionadas.getTamanho() == 1)
         {
-            if (cartasSelecionadas.get(0).getNaipe() == carta.getNaipe() && cartasSelecionadas.get(0).getNumero() == carta.getNumero() + 1)
+            // regra: a carta selecionada deve ser do mesmo naipe e um numero acima da carta clicada
+            if (cartasSelecionadas.getUltimoElemento().getCarta().getNaipe() == carta.getNaipe()
+                    && cartasSelecionadas.getUltimoElemento().getCarta().getNumero() == carta.getNumero() + 1)
             {
                 Monte destino = null;
 
+                // localiza o monte em que a carta foi clicada e define-o como destino
                 for (int i = 0; i < NUM_MONTES; i++)
                 {
-                    if (cartasSelecionadas.get(0).getNaipe() == montes[i].getNaipe())
+                    if (cartasSelecionadas.getUltimoElemento().getCarta().getNaipe() == montes[i].getNaipe())
                     {
                         destino = montes[i];
                     }
@@ -133,11 +215,13 @@ public class MesaDoJogo extends ActionBarActivity
 
                 adicionarSelecionadasApilha(origem, destino);
 
-                if (destino.getCartaTopo().getNumero() == 13)
+                // confirma se este monte ja esta completo
+                if (destino != null && destino.getUltimoElemento().getCarta().getNumero() == 13)
                 {
                     destino.setCompleto(true);
                 }
 
+                // confirma se todos montes estao completos e, se for o caso, encerra o jogo com vitoria
                 for (int i = 0; i < NUM_MONTES; i++)
                 {
                     if (i == 0 && montes[0].getCompleto())
@@ -158,6 +242,8 @@ public class MesaDoJogo extends ActionBarActivity
 
             limpaSelecionadas();
         }
+
+        // se nenhuma carta estiver selecionada, ou se mais de uma estiver, entao seleciona apenas a carta clicada
         else
         {
             limpaSelecionadas();
@@ -169,34 +255,14 @@ public class MesaDoJogo extends ActionBarActivity
                     origem = montes[i];
                 }
             }
-            carta.selecionar(true);
-            cartasSelecionadas.add(carta);
-        }
-
-    }
-
-    private static void limpaSelecionadas()
-    {
-        while (cartasSelecionadas.size() > 0)
-        {
-            cartasSelecionadas.get(0).selecionar(false);
-            cartasSelecionadas.remove(0);
+            carta.setSelecionada(true);
+            cartasSelecionadas.empilha(carta);
         }
     }
 
-    private static void adicionarSelecionadasApilha(PilhaBase origem, PilhaBase destino)
-    {
-        do
-        {
-            cartasSelecionadas.get(0).selecionar(false);
-            origem.retirarDoTopo(); // nao necessariamente a mesma
-            origem.removeView(cartasSelecionadas.get(0));
-            destino.inserirNoTopo(cartasSelecionadas.get(0));
-            cartasSelecionadas.remove(0);
-        }
-        while (cartasSelecionadas.size() > 0);
-    }
-
+    /**
+     * Inicio da execucao do jogo
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -259,6 +325,9 @@ public class MesaDoJogo extends ActionBarActivity
         // Atribui funcao para click no Deck
         deck.setOnClickListener(new DeckClick());
 
+        // Cria a pilha para receber cartas selecionadas
+        cartasSelecionadas = new TAD_PilhaCartas(getApplicationContext());
+
         // Inicia um novo jogo
         bt_novoJogo.callOnClick();
     }
@@ -301,11 +370,11 @@ public class MesaDoJogo extends ActionBarActivity
         final int a_distribuir   = 28;
         int       distribuidas   = 0;
         Carta     carta;
+
         for (int i = 0; distribuidas < a_distribuir; i++)
         {
             // Retira uma carta do deck
-            carta = deck.retirarDoTopo();
-            deck.removeView(carta);
+            carta = deck.desempilha();
 
             // se for a ultima da coluna, torne-a visivel
             if (i == primeiraColuna)
@@ -314,7 +383,7 @@ public class MesaDoJogo extends ActionBarActivity
             }
 
             // insere a carta na coluna
-            colunas[i].inserirNoTopo(carta);
+            colunas[i].empilha(carta);
 
             distribuidas++;
 
@@ -327,38 +396,40 @@ public class MesaDoJogo extends ActionBarActivity
         }
     }
 
-    /*
-     *  Classe para gerenciar os clicks no Deck
+    /**
+     * Classe para gerenciar os clicks no Deck
      */
     private class DeckClick implements View.OnClickListener
     {
         @Override
         public void onClick(View v)
         {
-            Carta cartaTopoDeck = deck.retirarDoTopo();
-            deck.removeView(cartaTopoDeck);
+            Carta cartaTopoDeck = deck.desempilha();
 
+            // se houver carta no deck, transfere-a para a pilha aberta
             if (cartaTopoDeck != null)
             {
-                pilhaAberta.inserirNoTopo(cartaTopoDeck);
+                pilhaAberta.empilha(cartaTopoDeck);
             }
+
+            // se nao houver carta no deck, retorna todas da pilha aberta para o deck
             else
             {
-                for (int i = pilhaAberta.cartas.size() - 1; i >= 0; i--)
+                for (int i = pilhaAberta.getTamanho(); i > 0; i--)
                 {
                     Carta cartaVoltarDeck;
-                    cartaVoltarDeck = pilhaAberta.retirarDoTopo();
+                    cartaVoltarDeck = pilhaAberta.desempilha();
                     pilhaAberta.removeView(cartaVoltarDeck);
                     cartaVoltarDeck.setOnClickListener(null);
-                    deck.inserirNoTopo(cartaVoltarDeck);
+                    deck.empilha(cartaVoltarDeck);
                 }
             }
         }
     }
 
     /*
- *  Classe para gerenciar os clicks nos montes
- */
+     *  Classe para gerenciar os cliques no monte vazio
+     */
     private class MonteClick implements View.OnClickListener
     {
         @Override
@@ -366,11 +437,12 @@ public class MesaDoJogo extends ActionBarActivity
         {
             Monte monte = (Monte) v;
 
-            if (cartasSelecionadas.size() == 1)
+            // se houver apenas uma carta selecionada, tenta encaixa-la no monte definitivo
+            if (cartasSelecionadas.getTamanho() == 1)
             {
-                if (monte.getCartas().size() == 0
-                        && cartasSelecionadas.get(0).getNaipe() == monte.getNaipe()
-                        && cartasSelecionadas.get(0).getNumero() == 1)
+                if (monte.getTamanho() == 0
+                        && cartasSelecionadas.getUltimoElemento().getCarta().getNaipe() == monte.getNaipe()
+                        && cartasSelecionadas.getUltimoElemento().getCarta().getNumero() == 1)
                 {
                     adicionarSelecionadasApilha(origem, monte);
                 }
