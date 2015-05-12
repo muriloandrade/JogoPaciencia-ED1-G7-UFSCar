@@ -8,30 +8,30 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.murilo.jogopaciencia.Pilhas.Coluna;
 import com.example.murilo.jogopaciencia.Pilhas.Deck;
-import com.example.murilo.jogopaciencia.Pilhas.Monte;
 import com.example.murilo.jogopaciencia.Pilhas.NodeCarta;
 import com.example.murilo.jogopaciencia.Pilhas.PilhaAberta;
+import com.example.murilo.jogopaciencia.Pilhas.PilhaDefinitiva;
+import com.example.murilo.jogopaciencia.Pilhas.PilhaIntermediaria;
 import com.example.murilo.jogopaciencia.Pilhas.TAD_PilhaCartas;
 
 
 public class MesaDoJogo extends ActionBarActivity
 {
 
-    private static final int NUM_COLUNAS = 7;
-    private static final int NUM_MONTES  = 4;
+    private static final int NUM_PILHAS_INTERMEDIARIAS = 7;
+    private static final int NUM_PILHAS_DEFINITIVAS    = 4;
 
     public static TAD_PilhaCartas cartasSelecionadas;
-    public static Coluna ult_coluna = null;
+    public static PilhaIntermediaria ult_pilhaIntermediaria = null;
     private static PilhaAberta pilhaAberta;
-    private static Monte[]  montes  = new Monte[NUM_MONTES];
-    private static Coluna[] colunas = new Coluna[NUM_COLUNAS];
+    private static PilhaDefinitiva[]    pilhasDefinitivas    = new PilhaDefinitiva[NUM_PILHAS_DEFINITIVAS];
+    private static PilhaIntermediaria[] pilhasIntermediarias = new PilhaIntermediaria[NUM_PILHAS_INTERMEDIARIAS];
     private static TAD_PilhaCartas origem;
     private static TextView        tx_venceu;
     private static boolean venceu = false;
     private Deck         deck;
-    private LinearLayout montesLayout;
+    private LinearLayout pilhasDefinitivasLayout;
     private LinearLayout mainLayout;
     private Button       bt_novoJogo;
 
@@ -69,20 +69,20 @@ public class MesaDoJogo extends ActionBarActivity
     }
 
     /**
-     * Metodo para gerenciar os cliques nas colunas
+     * Metodo para gerenciar os cliques nas pilhas intermediarias
      *
-     * @param destino: coluna que vai receber a(s) carta(s)
+     * @param destino: pilha intermediari que vai receber a(s) carta(s)
      * @param carta:   carta em que houve o clique
      */
-    public static void cartaClicadaColuna(Coluna destino, Carta carta)
+    public static void cartaClicadaPilhaIntermediaria(PilhaIntermediaria destino, Carta carta)
     {
-        // se nao houver carta(s) ja selecionada(s), entao a(s) cartas(s) esta(o) sendo selecionada(s) e nao mudara(o) de coluna
+        // se nao houver carta(s) ja selecionada(s), entao a(s) cartas(s) esta(o) sendo selecionada(s) e nao mudara(o) de pilha intermediaria
         if (cartasSelecionadas.getTamanho() == 0)
         {
             origem = destino;
         }
 
-        // se o clique foi numa coluna vazia, pode ser colocado apenas uma sequencia de cartas iniciada por um Rei
+        // se o clique foi numa pilha intermediaria vazia, pode ser colocado apenas uma sequencia de cartas iniciada por um Rei
         if (carta == null)
         {
             if (cartasSelecionadas.getTamanho() > 0 && cartasSelecionadas.getUltimoElemento().getCarta().getNumero() == 13)
@@ -98,7 +98,7 @@ public class MesaDoJogo extends ActionBarActivity
             limpaSelecionadas();
         }
 
-        // se a carta clicada estiver de costas e for a ultima da coluna, entao ela sera virada
+        // se a carta clicada estiver de costas e for a ultima da pilha intermediaria, entao ela sera virada
         else if (!carta.getMostrandoFrente() && carta == destino.getUltimoElemento().getCarta())
         {
             carta.setImagem(null);
@@ -107,8 +107,8 @@ public class MesaDoJogo extends ActionBarActivity
 
         else
         {
-            // tentativa para encaixar a(s) carta(s) selecionada(s) na coluna destino
-            if (ult_coluna != destino && cartasSelecionadas.getTamanho() > 0)
+            // tentativa para encaixar a(s) carta(s) selecionada(s) na pilha intermediaria destino
+            if (ult_pilhaIntermediaria != destino && cartasSelecionadas.getTamanho() > 0)
             {
                 // regra: a primeira carta da sequencia tem que ser de cor diferente e um numero abaixo da carta clicada
                 if (carta == destino.getUltimoElemento().getCarta() && cartasSelecionadas.getUltimoElemento().getCarta().getCor() != carta.getCor() && cartasSelecionadas.getUltimoElemento().getCarta().getNumero() == carta.getNumero() - 1)
@@ -146,8 +146,8 @@ public class MesaDoJogo extends ActionBarActivity
                 }
             }
 
-            // atualiza a coluna atual como a ultima coluna em que houve atividade
-            ult_coluna = destino;
+            // atualiza a pilha intermediaria atual como a ultima pilha intermediaria em que houve atividade
+            ult_pilhaIntermediaria = destino;
         }
     }
 
@@ -158,8 +158,8 @@ public class MesaDoJogo extends ActionBarActivity
      */
     public static void cartaClicadaPilhaAberta(Carta carta)
     {
-        // informa que a ultima atividade nao tera sido em coluna, pois esta sendo na pilha aberta
-        ult_coluna = null;
+        // informa que a ultima atividade nao tera sido em pilha intermediaria, pois esta sendo na pilha aberta
+        ult_pilhaIntermediaria = null;
 
         // a carta foi clicada novamente, entao desfaz a selecao
         if (carta.getSelecionada())
@@ -180,14 +180,14 @@ public class MesaDoJogo extends ActionBarActivity
     // Fim metodos para criar e organizar um novo jogo
 
     /**
-     * Metodo para gerenciar os cliques nas cartas dos montes definitivos
+     * Metodo para gerenciar os cliques nas cartas dos pilhasDefinitivas definitivos
      *
      * @param carta: carta em que houve o clique
      */
-    public static void cartaClicadaMonte(Carta carta)
+    public static void cartaClicadaPilhaDefinitiva(Carta carta)
     {
-        // informa que a ultima atividade nao tera sido em coluna, pois esta sendo em um monte definitivo
-        ult_coluna = null;
+        // informa que a ultima atividade nao tera sido em pilha intermediaria, pois esta sendo em uma pilha definitiva
+        ult_pilhaIntermediaria = null;
 
         // a carta foi clicada novamente, entao desfaz a selecao
         if (carta.getSelecionada())
@@ -195,42 +195,42 @@ public class MesaDoJogo extends ActionBarActivity
             limpaSelecionadas();
         }
 
-        // se houver apenas uma carta selecionada, tenta encaixa-la no monte definitivo
+        // se houver apenas uma carta selecionada, tenta encaixa-la na pilha definitiva
         else if (cartasSelecionadas.getTamanho() == 1)
         {
             // regra: a carta selecionada deve ser do mesmo naipe e um numero acima da carta clicada
             if (cartasSelecionadas.getUltimoElemento().getCarta().getNaipe() == carta.getNaipe()
                     && cartasSelecionadas.getUltimoElemento().getCarta().getNumero() == carta.getNumero() + 1)
             {
-                Monte destino = null;
+                PilhaDefinitiva destino = null;
 
-                // localiza o monte em que a carta foi clicada e define-o como destino
-                for (int i = 0; i < NUM_MONTES; i++)
+                // localiza a pilha definitiva em que a carta foi clicada e define-o como destino
+                for (int i = 0; i < NUM_PILHAS_DEFINITIVAS; i++)
                 {
-                    if (cartasSelecionadas.getUltimoElemento().getCarta().getNaipe() == montes[i].getNaipe())
+                    if (cartasSelecionadas.getUltimoElemento().getCarta().getNaipe() == pilhasDefinitivas[i].getNaipe())
                     {
-                        destino = montes[i];
+                        destino = pilhasDefinitivas[i];
                     }
                 }
 
                 adicionarSelecionadasApilha(origem, destino);
 
-                // confirma se este monte ja esta completo
+                // confirma se esta pilha definitiva ja esta completa
                 if (destino != null && destino.getUltimoElemento().getCarta().getNumero() == 13)
                 {
                     destino.setCompleto(true);
                 }
 
-                // confirma se todos montes estao completos e, se for o caso, encerra o jogo com vitoria
-                for (int i = 0; i < NUM_MONTES; i++)
+                // confirma se todos pilhasDefinitivas estao completos e, se for o caso, encerra o jogo com vitoria
+                for (int i = 0; i < NUM_PILHAS_DEFINITIVAS; i++)
                 {
-                    if (i == 0 && montes[0].getCompleto())
+                    if (i == 0 && pilhasDefinitivas[0].getCompleto())
                     {
                         venceu = true;
                     }
                     else
                     {
-                        venceu = venceu && montes[i].getCompleto();
+                        venceu = venceu && pilhasDefinitivas[i].getCompleto();
                     }
                 }
 
@@ -248,11 +248,11 @@ public class MesaDoJogo extends ActionBarActivity
         {
             limpaSelecionadas();
 
-            for (int i = 0; i < NUM_MONTES; i++)
+            for (int i = 0; i < NUM_PILHAS_DEFINITIVAS; i++)
             {
-                if (carta.getNaipe() == montes[i].getNaipe())
+                if (carta.getNaipe() == pilhasDefinitivas[i].getNaipe())
                 {
-                    origem = montes[i];
+                    origem = pilhasDefinitivas[i];
                 }
             }
             carta.setSelecionada(true);
@@ -270,19 +270,19 @@ public class MesaDoJogo extends ActionBarActivity
         setContentView(R.layout.activity_main);
 
         // Busca os layouts ja instanciados
-        montesLayout = (LinearLayout) findViewById(R.id.montesLayout);
+        pilhasDefinitivasLayout = (LinearLayout) findViewById(R.id.pilhasDefinitivasLayout);
         mainLayout = (LinearLayout) findViewById(R.id.mainLayout);
         deck = (Deck) findViewById(R.id.deck);
         pilhaAberta = (PilhaAberta) findViewById(R.id.open);
         bt_novoJogo = (Button) findViewById(R.id.bt_novoJogo);
         tx_venceu = (TextView) findViewById(R.id.tx_venceu);
 
-        // Cria o vetor dos MONTES
-        for (int i = 0; i < NUM_MONTES; i++)
+        // Cria o vetor das PILHAS DEFINITIVAS
+        for (int i = 0; i < NUM_PILHAS_DEFINITIVAS; i++)
         {
-            montes[i] = (Monte) montesLayout.getChildAt(i);
-            montes[i].setNaipe(Carta.naipes[i]);
-            montes[i].setOnClickListener(new MonteClick());
+            pilhasDefinitivas[i] = (PilhaDefinitiva) pilhasDefinitivasLayout.getChildAt(i);
+            pilhasDefinitivas[i].setNaipe(Carta.naipes[i]);
+            pilhasDefinitivas[i].setOnClickListener(new PilhaDefinitivaClick());
 
             Drawable naipe_fundo = null;
 
@@ -302,14 +302,14 @@ public class MesaDoJogo extends ActionBarActivity
                     break;
             }
 
-            montes[i].setBackground(naipe_fundo);
+            pilhasDefinitivas[i].setBackground(naipe_fundo);
         }
 
-        // Cria o vetor das COLUNAS
-        for (int i = 0; i < NUM_COLUNAS; i++)
+        // Cria o vetor das PILHAS INTERMEDIARIAS
+        for (int i = 0; i < NUM_PILHAS_INTERMEDIARIAS; i++)
         {
-            colunas[i] = (Coluna) mainLayout.getChildAt(i);
-            colunas[i].setPosicao(i);
+            pilhasIntermediarias[i] = (PilhaIntermediaria) mainLayout.getChildAt(i);
+            pilhasIntermediarias[i].setPosicao(i);
         }
 
         // Atribui funcao para click do botao Novo Jogo
@@ -346,16 +346,16 @@ public class MesaDoJogo extends ActionBarActivity
         // inicia a Pilha Aberta
         pilhaAberta.reset();
 
-        // inicia os montes
-        for (int i = 0; i < NUM_MONTES; i++)
+        // inicia os pilhasDefinitivas
+        for (int i = 0; i < NUM_PILHAS_DEFINITIVAS; i++)
         {
-            montes[i].reset();
+            pilhasDefinitivas[i].reset();
         }
 
-        // inicia as colunas
-        for (int i = 0; i < NUM_COLUNAS; i++)
+        // inicia as pilhasIntermediarias
+        for (int i = 0; i < NUM_PILHAS_INTERMEDIARIAS; i++)
         {
-            colunas[i].reset();
+            pilhasIntermediarias[i].reset();
         }
 
         // reseta cartas selecionadas
@@ -366,7 +366,7 @@ public class MesaDoJogo extends ActionBarActivity
 
     private void distribuirCartas()
     {
-        int       primeiraColuna = 0;
+        int primeiraPilhaIntermediaria = 0;
         final int a_distribuir   = 28;
         int       distribuidas   = 0;
         Carta     carta;
@@ -376,22 +376,22 @@ public class MesaDoJogo extends ActionBarActivity
             // Retira uma carta do deck
             carta = deck.desempilha();
 
-            // se for a ultima da coluna, torne-a visivel
-            if (i == primeiraColuna)
+            // se for a ultima da pilha intermediaria, torne-a visivel
+            if (i == primeiraPilhaIntermediaria)
             {
                 carta.setImagem(null);
             }
 
-            // insere a carta na coluna
-            colunas[i].empilha(carta);
+            // insere a carta na pilha intermediaria
+            pilhasIntermediarias[i].empilha(carta);
 
             distribuidas++;
 
-            // se for a ultima coluna, reinicia a distribuicao pela primeira coluna (em forma de escadinha)
-            if (i == NUM_COLUNAS - 1)
+            // se for a ultima pilha intermediaria, reinicia a distribuicao pela primeira pilha intermediaria (em forma de escadinha)
+            if (i == NUM_PILHAS_INTERMEDIARIAS - 1)
             {
-                primeiraColuna++;
-                i = primeiraColuna - 1;
+                primeiraPilhaIntermediaria++;
+                i = primeiraPilhaIntermediaria - 1;
             }
         }
     }
@@ -428,23 +428,23 @@ public class MesaDoJogo extends ActionBarActivity
     }
 
     /*
-     *  Classe para gerenciar os cliques no monte vazio
+     *  Classe para gerenciar os cliques na pilha definitiva vazia
      */
-    private class MonteClick implements View.OnClickListener
+    private class PilhaDefinitivaClick implements View.OnClickListener
     {
         @Override
         public void onClick(View v)
         {
-            Monte monte = (Monte) v;
+            PilhaDefinitiva pilhaDefinitiva = (PilhaDefinitiva) v;
 
-            // se houver apenas uma carta selecionada, tenta encaixa-la no monte definitivo
+            // se houver apenas uma carta selecionada, tenta encaixa-la na pilha definitiva
             if (cartasSelecionadas.getTamanho() == 1)
             {
-                if (monte.getTamanho() == 0
-                        && cartasSelecionadas.getUltimoElemento().getCarta().getNaipe() == monte.getNaipe()
+                if (pilhaDefinitiva.getTamanho() == 0
+                        && cartasSelecionadas.getUltimoElemento().getCarta().getNaipe() == pilhaDefinitiva.getNaipe()
                         && cartasSelecionadas.getUltimoElemento().getCarta().getNumero() == 1)
                 {
-                    adicionarSelecionadasApilha(origem, monte);
+                    adicionarSelecionadasApilha(origem, pilhaDefinitiva);
                 }
 
                 limpaSelecionadas();

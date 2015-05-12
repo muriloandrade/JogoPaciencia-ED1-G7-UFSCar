@@ -11,9 +11,9 @@ import com.example.murilo.jogopaciencia.MesaDoJogo;
 import com.example.murilo.jogopaciencia.R;
 
 /**
- * Classe Coluna
+ * Classe PilhaIntermediaria
  */
-public class Coluna extends TAD_PilhaCartas
+public class PilhaIntermediaria extends TAD_PilhaCartas
 {
     private Context context;
     private int     posicao;
@@ -22,13 +22,13 @@ public class Coluna extends TAD_PilhaCartas
     private MesaDoJogo mesaDoJogo;
 
     // Construtores
-    public Coluna(Context context)
+    public PilhaIntermediaria(Context context)
     {
         super(context);
         this.context = context;
     }
 
-    public Coluna(Context context, AttributeSet attrs)
+    public PilhaIntermediaria(Context context, AttributeSet attrs)
     {
         super(context, attrs);
 
@@ -37,7 +37,7 @@ public class Coluna extends TAD_PilhaCartas
         reset();
     }
 
-    public Coluna(Context context, AttributeSet attrs, int defStyleAttr)
+    public PilhaIntermediaria(Context context, AttributeSet attrs, int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
         this.context = context;
@@ -53,7 +53,7 @@ public class Coluna extends TAD_PilhaCartas
     // Fim getters e setters
 
     /**
-     * Preparacao desta coluna ao ser construida
+     * Preparacao desta pilha intermediaria ao ser construida
      */
     public void reset()
     {
@@ -65,13 +65,13 @@ public class Coluna extends TAD_PilhaCartas
             @Override
             public void onClick(View v)
             {
-                mesaDoJogo.cartaClicadaColuna((Coluna) v, null);
+                mesaDoJogo.cartaClicadaPilhaIntermediaria((PilhaIntermediaria) v, null);
             }
         });
     }
 
     /**
-     * Metodo para empilhar uma carta nesta coluna
+     * Metodo para empilhar uma carta nesta pilha intermediaria
      *
      * @param carta: carta a ser empilhada
      * @return : verdadeiro se foi empilhada, falso se nao foi
@@ -86,11 +86,11 @@ public class Coluna extends TAD_PilhaCartas
             // controla os cliques na carta
             carta.setOnClickListener(cartaClicada);
 
-            // define a posicao e tamanho da carta neste coluna
+            // define a posicao e tamanho da carta nesta pilha intermediaria
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) getResources().getDimension(R.dimen.altura_carta));
             params.topMargin = (int) ((getTamanho() - 1) * getResources().getDimension(R.dimen.distancia_cartas));
 
-            // adiciona a carta (visualmente) nesta coluna
+            // adiciona a carta (visualmente) nesta pilha intermediaria
             addView(getUltimoElemento().getCarta(), params);
         }
 
@@ -98,14 +98,14 @@ public class Coluna extends TAD_PilhaCartas
     }
 
     /**
-     * Classe para controlar o clique em cartas desta coluna
+     * Classe para controlar o clique em cartas desta pilha intermediaria
      */
     private class CartaClicada implements OnClickListener
     {
         @Override
         public void onClick(View v)
         {
-            mesaDoJogo.cartaClicadaColuna((Coluna) v.getParent(), (Carta) v);
+            mesaDoJogo.cartaClicadaPilhaIntermediaria((PilhaIntermediaria) v.getParent(), (Carta) v);
         }
     }
 }

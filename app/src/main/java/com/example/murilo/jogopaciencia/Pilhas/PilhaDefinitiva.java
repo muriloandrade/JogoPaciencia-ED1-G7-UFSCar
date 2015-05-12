@@ -11,9 +11,9 @@ import com.example.murilo.jogopaciencia.MesaDoJogo;
 import com.example.murilo.jogopaciencia.R;
 
 /**
- * Classe Monte Definitivo
+ * Classe PilhaDefinitiva
  */
-public class Monte extends TAD_PilhaCartas
+public class PilhaDefinitiva extends TAD_PilhaCartas
 {
     private Context context;
 
@@ -24,13 +24,13 @@ public class Monte extends TAD_PilhaCartas
     private CartaClicada cartaClicada = new CartaClicada();
 
     // Construtores
-    public Monte(Context context)
+    public PilhaDefinitiva(Context context)
     {
         super(context);
         this.context = context;
     }
 
-    public Monte(Context context, AttributeSet attrs)
+    public PilhaDefinitiva(Context context, AttributeSet attrs)
     {
         super(context, attrs);
         this.context = context;
@@ -39,7 +39,7 @@ public class Monte extends TAD_PilhaCartas
         reset();
     }
 
-    public Monte(Context context, AttributeSet attrs, int defStyleAttr)
+    public PilhaDefinitiva(Context context, AttributeSet attrs, int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
         this.context = context;
@@ -69,7 +69,7 @@ public class Monte extends TAD_PilhaCartas
     // Fim getters e setters
 
     /**
-     * Preparacao deste monte ao ser construido
+     * Preparacao desta pilha definitiva ao ser construida
      */
     public void reset()
     {
@@ -78,7 +78,7 @@ public class Monte extends TAD_PilhaCartas
     }
 
     /**
-     * Metodo para empilhar uma carta neste monte
+     * Metodo para empilhar uma carta nesta pilha definitiva
      *
      * @param carta: carta a ser empilhada
      * @return : verdadeiro se foi empilhada, falso se nao foi
@@ -95,21 +95,21 @@ public class Monte extends TAD_PilhaCartas
             // reseta definicoes de tamanho e posicao da carta
             RelativeLayout.LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (int) getResources().getDimension(R.dimen.altura_carta));
 
-            // adiciona a carta (visualmente) a este monte
+            // adiciona a carta (visualmente) a esta pilha definitiva
             addView(getUltimoElemento().getCarta(), params);
         }
         return deuCerto;
     }
 
     /**
-     * Classe para controlar o clique em cartas deste monte
+     * Classe para controlar o clique em cartas desta pilha definitiva
      */
     private class CartaClicada implements OnClickListener
     {
         @Override
         public void onClick(View v)
         {
-            mesaDoJogo.cartaClicadaMonte((Carta) v);
+            mesaDoJogo.cartaClicadaPilhaDefinitiva((Carta) v);
         }
     }
 }
